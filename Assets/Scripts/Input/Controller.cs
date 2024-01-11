@@ -6,10 +6,8 @@ using UnityEngine.Tilemaps;
 
 public class Controller : MonoBehaviour
 {
-    [SerializeField]
-    private Tilemap groundTilemap;
-    [SerializeField]
-    private Tilemap colTilemap;
+    [SerializeField] private Tilemap groundTilemap;
+    [SerializeField] private Tilemap colTilemap;
     private Player input;
 
     Vector3 endPos;
@@ -18,12 +16,14 @@ public class Controller : MonoBehaviour
     private void Awake()
     {
         input = new Player();
+        input.Main.Movement.performed += MovePerformed;
     }
 
     private void OnEnable()
     {
         input.Enable();
     }
+
 
     private void OnDisable()
     {
@@ -61,17 +61,30 @@ public class Controller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (input.Main.Movement.IsPressed() && !isMoving)
-        {
-            Vector2 direction = input.Main.Movement.ReadValue<Vector2>();
-            if (direction.x != 0 && direction.y != 0)
-                return;
+        //if (input.Main.Movement.IsPressed() && !isMoving)
+        //{
+        //    Vector2 direction = input.Main.Movement.ReadValue<Vector2>();
+        //    if (direction.x != 0 && direction.y != 0)
+        //        return;
 
-            if (CanMove(direction))
-            {
-                endPos = transform.position + (Vector3)direction;
-                isMoving = true;
-            }
-        }
+        //    if (CanMove(direction))
+        //    {
+        //        endPos = transform.position + (Vector3)direction;
+        //        isMoving = true;
+        //    }
+        //}
+    }
+
+    void MovePerformed(InputAction.CallbackContext ctx)
+    {
+        if (isMoving) return;
+
+        Vector2 dir = input.Main.Movement.ReadValue<Vector2>();
+
+        if (CanMove(dir))
+        {
+            endPos = transform.position + (Vector3)dir;
+            isMoving = true;
+        }    
     }
 }
